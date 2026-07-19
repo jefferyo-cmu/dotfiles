@@ -12,7 +12,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.kernelPackages = pkgs.linuxPackages_xanmod;
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   hardware.firmware = [
     (pkgs.runCommand "sceptre-q32-edid" {} ''
@@ -29,12 +28,7 @@
   ];
   boot.kernelParams = [
     "amd_pstate=active"
-    # "amdgpu.dc=1"
-    # "amdgpu.dcdebugmask=0x10"
-    # "amdgpu.dcfeaturemask=0x0"
-    # "amdgpu.deep_color=0"
     "drm.edid_firmware=HDMI-A-2:edid/sceptre-q32.bin"
-    # "nomodeset"
   ];
 
   # RAM and Swap
@@ -70,8 +64,6 @@
   hardware.amdgpu = {
     opencl.enable = true;
     initrd.enable = true;
-    # overdrive.enable = true;
-    # overdrive.ppfeaturemask = "0xfffd7fff";
   };
   systemd.tmpfiles.rules = 
   let
@@ -104,8 +96,26 @@
     settings.X11Forwarding = true;
   };
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 47984 47989 48010 27036 27037 22 25565 8100 ];
-  networking.firewall.allowedUDPPorts = [ 47998 47999 48000 48002 48010 27031 27036 58000 ];
+  networking.firewall.allowedTCPPorts = [
+    22       # SSH
+    8100     # BlueMap (Mineraft)
+    25565    # Minecraft
+    27036    # Steam (in-home streaming / Remote Play)
+    27037    # Steam
+    47984    # Sunshine (Moonlight HTTPS)
+    47989    # Sunshine (Moonlight HTTP)
+    48010    # Sunshine (Moonlight RTSP)
+  ];
+
+  networking.firewall.allowedUDPPorts = [
+    27031    # Steam (Remote Play)
+    27036    # Steam (Remote Play)
+    47998    # Sunshine (Moonlight video)
+    47999    # Sunshine (Moonlight control)
+    48000    # Sunshine (Moonlight audio)
+    48002    # Sunshine (Moonlight mic)
+    48010    # Sunshine (Moonlight RTSP)
+  ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
@@ -131,8 +141,8 @@
   };
 
   systemd.sleep.settings.Sleep = {
-    HibernateDelaySec = "2h";
-    SuspendState = "mem";
+    AllowSuspend=true;
+    AllowHybridSleep=true;
   };
 
   # Enable sound.
@@ -266,12 +276,10 @@
   environment.variables = {
     NIXOS_OZONE_WL = "1"; # Configure Electron / CEF apps to use Wayland
 
+    RADV_PERFTEST="gpl";
+    RADV_DEBUG="nongg";
     LIBVA_DRIVER_NAME = "radeonsi";
   };
-
-  environment.etc."gai.conf".text = ''
-    precedence ::ffff:0:0/96  100
-  '';
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

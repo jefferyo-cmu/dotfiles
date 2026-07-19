@@ -13,22 +13,8 @@
     "uasm"
   ];
 
-  services.flatpak = {
-    enable = true;
-    packages = [
-      "org.vinegarhq.Sober"
-    ];
-    remotes = [
-      {
-        name = "flathub";
-        location = "https://flathub.org/repo/flathub.flatpakrepo";
-      }
-    ];
-  };
-
   home.packages = with pkgs; [
     # System utilities
-    flatpak
     appimage-run
     android-tools
 
@@ -77,8 +63,8 @@
     prismlauncher
     limo
     dolphin-emu
-    ryubing
     cemu
+    ryubing
 
     # Gaming components
     gamemode
@@ -89,14 +75,14 @@
   programs.firefox = {
     enable = true;
     profiles.default = {
-      extensions.force = true;
+      # extensions.force = true;
       settings = {
       	"layout.css.devPixelsPerPx" = "1.2";
       };
     };
     policies = {
       ExtensionSettings = {
-        "*".installation_mode = "blocked"; # blocks all addons except the ones specified below
+        # "*".installation_mode = "blocked"; # blocks all addons except the ones specified below
       	# uBlock Origin:
         "uBlock0@raymondhill.net" = {
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
@@ -147,7 +133,7 @@
     dotDir = "${config.xdg.configHome}/zsh";
 
     shellAliases = {
-      update = "nh os switch --update && flatpak update";
+      update = "nh os switch";
 
       config = "nvim ~/dotfiles/configuration.nix";
       flake = "nvim ~/dotfiles/flake.nix";
@@ -161,33 +147,7 @@
       cat = "bat --style=plain --paging=never";
       cd = "z";
       claer = "clear";
-
-      termusic = "~/Documents/Projects/termusic/target/release/termusic";
     };
-
-    initContent = ''
-      ds4color() {
-        local RED=''${1:-4}
-        local GREEN=''${2:-0}
-        local BLUE=''${3:-0}
-      
-        # Find DualShock 4 controller (054C:09CC is Sony DualShock 4)
-        local CONTROLLER=$(ls -l /sys/class/leds/ | grep "054C:09CC" | grep ":red" | sed 's/.*\(input[0-9]*\):red.*/\1/' | head -1)
-      
-        if [ -z "$CONTROLLER" ]; then
-          echo "No DualShock 4 controller found"
-          echo "Available LED devices:"
-          ls /sys/class/leds/ | grep -E ":(red|blue|green)$"
-          return 1
-        fi
-      
-        echo $RED | sudo tee /sys/class/leds/''${CONTROLLER}:red/brightness > /dev/null
-        echo $GREEN | sudo tee /sys/class/leds/''${CONTROLLER}:green/brightness > /dev/null
-        echo $BLUE | sudo tee /sys/class/leds/''${CONTROLLER}:blue/brightness > /dev/null
-      
-        echo "Set controller $CONTROLLER to RGB($RED,$GREEN,$BLUE)"
-      }
-    '';
 
     oh-my-zsh = {
       enable = true;
@@ -347,6 +307,7 @@
     enable = true;
     flavor = "mocha";
 
+    firefox.enable = false;
     eza.enable = true;
     yazi.enable = true;
     nvim.enable = true;
@@ -381,7 +342,7 @@
     pinentry.package = pkgs.pinentry-curses;
   };
 
-  # services.ssh-agent.enable = true;
+  services.ssh-agent.enable = false;
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
@@ -413,12 +374,13 @@ Type=Application
     QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
 
     FLAKE="$HOME/dotfiles";
-    XDG_DATA_DIRS = lib.concatStringsSep ":" [
-        "$HOME/.local/share/flatpak/exports/share"
-        "/var/lib/flatpak/exports/share"
-        "$HOME/.nix-profile/share"
-        "/run/current-system/sw/share"
-      ];
+
+    # XDG_DATA_DIRS = lib.concatStringsSep ":" [
+    #   "$HOME/.local/share/flatpak/exports/share"
+    #   "/var/lib/flatpak/exports/share"
+    #   "$HOME/.nix-profile/share"
+    #   "/run/current-system/sw/share"
+    # ];
   };
 
   home.stateVersion = "25.05";
