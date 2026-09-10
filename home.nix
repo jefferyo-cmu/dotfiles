@@ -342,11 +342,11 @@
   services.gpg-agent = {
     enable = true;
     enableZshIntegration = true;
-    enableSshSupport = true;
+    enableSshSupport = false;
     pinentry.package = pkgs.pinentry-curses;
   };
 
-  services.ssh-agent.enable = false;
+  services.ssh-agent.enable = true;
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
