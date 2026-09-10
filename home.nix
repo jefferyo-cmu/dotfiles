@@ -63,8 +63,9 @@
     prismlauncher
     limo
     dolphin-emu
-    cemu
     ryubing
+    azahar
+    openmw
 
     # Gaming components
     gamemode
@@ -248,6 +249,8 @@
     defaultEditor = true;
     viAlias = true;
     vimAlias = true;
+    withRuby = false;
+    withPython3 = false;
 
     plugins = with pkgs.vimPlugins; [
       telescope-nvim
@@ -300,10 +303,11 @@
       tinymist
     ];
 
-    extraLuaConfig = builtins.readFile ./neovim.lua;
+    initLua = builtins.readFile ./neovim.lua;
   };
 
   catppuccin = {
+    autoEnable = true;
     enable = true;
     flavor = "mocha";
 
@@ -368,6 +372,12 @@ TryExec=uwsm
 DesktopNames=Hyprland:X-NIXOS-SYSTEMD-AWARE
 Type=Application
   '';
+
+  home.pointerCursor = {
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Ice";
+    size = 24;
+  };
 
   home.sessionVariables = {
     GTK_USE_PORTAL = "1"; # legacy

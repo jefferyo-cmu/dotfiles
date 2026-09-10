@@ -156,6 +156,10 @@
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
 
+  services.udev.extraRules = ''
+    KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="054c", MODE="0660", GROUP="input"
+  '';
+
   # Select internationalisation properties.
   # i18n.defaultLocale = "en_US.UTF-8";
   # console = {
@@ -244,6 +248,14 @@
     flake = "/home/yoops/dotfiles";
   };
 
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    libxcrypt-legacy   # libcrypt.so.1 — tes3cmd needs this
+    stdenv.cc.cc.lib   # libstdc++ / libgcc_s — common C++ runtime deps
+    zlib               # libz.so.1
+    glibc              # libm.so.6, libc.so.6, etc
+  ];
+
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
@@ -268,6 +280,8 @@
   environment.systemPackages = with pkgs; [
     vulkan-validation-layers
     libva-utils
+    desktop-file-utils
+    steam-run
 
     rage
     ragenix
